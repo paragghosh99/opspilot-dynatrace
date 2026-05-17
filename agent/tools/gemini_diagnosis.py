@@ -59,6 +59,7 @@ def diagnose_problem(
     if vertexai is None or GenerativeModel is None:
         raise RuntimeError("google-cloud-aiplatform is required outside demo mode")
 
+    config.validate_vertex_ai_billing_config()
     vertexai.init(project=config.PROJECT_ID, location=config.LOCATION)
     model = GenerativeModel("gemini-2.5-pro-preview-05-06")
     entity_names = [item.get("entityName", item.get("displayName", "unknown")) for item in entities]

@@ -34,3 +34,13 @@ uvicorn api.main:app --reload
 ```
 
 The app uses fixture data when `DEMO_MODE=true` or Dynatrace credentials are absent.
+
+## Gemini Billing
+
+OpsPilot must use Gemini only through Vertex AI so calls are billed to the Google Cloud project. Do not configure `GEMINI_API_KEY` or `GOOGLE_API_KEY`. Production deployments should set:
+
+```bash
+GCP_PROJECT_ID=opspilot-hackathon-2026
+GCP_LOCATION=us-central1
+DEMO_MODE=false
+```

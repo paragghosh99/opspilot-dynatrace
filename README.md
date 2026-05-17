@@ -47,6 +47,8 @@ AGENT_BUILDER_ENGINE_ID=your-agent-builder-engine-id
 RESTART_WEBHOOK_URL=https://example.internal/restart
 ```
 
+Gemini billing rule: OpsPilot uses Gemini only through Vertex AI. Do not set `GEMINI_API_KEY` or `GOOGLE_API_KEY`; production diagnosis calls initialize Vertex AI with `GCP_PROJECT_ID` and `GCP_LOCATION`.
+
 ## Architecture
 
 ```mermaid

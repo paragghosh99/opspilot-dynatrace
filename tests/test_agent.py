@@ -1,6 +1,7 @@
 import pytest
 import asyncio
 
+from agent import config
 from agent.orchestrator import handle_problem
 from agent.self_learn.runbook_updater import update_runbook
 from agent.tools.agent_builder import get_grounding_context
@@ -42,6 +43,13 @@ def test_agent_builder_grounding_demo_context(sample_problem):
 
     assert context["source"] == "agent_builder_demo"
     assert "traffic_spike" in context["summary"]
+
+
+def test_vertex_ai_billing_config_rejects_api_keys(monkeypatch):
+    monkeypatch.setenv("GEMINI_API_KEY", "not-allowed")
+
+    with pytest.raises(RuntimeError, match="Vertex AI billing only"):
+        config.validate_vertex_ai_billing_config()
 
 
 def test_remediation_selects_known_action(sample_problem):

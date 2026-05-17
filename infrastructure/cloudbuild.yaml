@@ -13,4 +13,4 @@ steps:
       - --min-instances
       - "1"
       - --set-env-vars
-      - GCP_PROJECT_ID=opspilot-hackathon-2026,DEMO_MODE=false
+      - GCP_PROJECT_ID=opspilot-hackathon-2026,GCP_LOCATION=us-central1,DEMO_MODE=false

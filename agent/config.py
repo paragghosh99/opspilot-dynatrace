@@ -15,3 +15,14 @@ DEMO_MODE = os.getenv("DEMO_MODE", "").lower() in {"1", "true", "yes"} or not os
 ROOT_DIR = Path(__file__).resolve().parents[1]
 LOCAL_STATE_DIR = ROOT_DIR / ".opspilot"
 FIXTURE_PROBLEM = ROOT_DIR / "tests" / "fixtures" / "sample_problem.json"
+
+
+def validate_vertex_ai_billing_config() -> None:
+    if os.getenv("GEMINI_API_KEY"):
+        raise RuntimeError("GEMINI_API_KEY is not allowed. OpsPilot must use Gemini through Vertex AI billing only.")
+    if os.getenv("GOOGLE_API_KEY"):
+        raise RuntimeError("GOOGLE_API_KEY is not allowed for Gemini. Use Vertex AI project/location configuration.")
+    if not PROJECT_ID:
+        raise RuntimeError("GCP_PROJECT_ID must be set for Vertex AI Gemini billing.")
+    if not LOCATION:
+        raise RuntimeError("GCP_LOCATION must be set for Vertex AI Gemini billing.")
