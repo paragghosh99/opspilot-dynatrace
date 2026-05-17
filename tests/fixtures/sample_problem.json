@@ -1,0 +1,78 @@
+{
+  "problem": {
+    "problemId": "P-240517-001",
+    "title": "Checkout API latency and error rate increased",
+    "severityLevel": "AVAILABILITY",
+    "entityNames": ["checkout-service", "payment-gateway"],
+    "startTime": "2026-05-17T03:12:00Z",
+    "problemUrl": "https://example.live.dynatrace.com/ui/problems/P-240517-001",
+    "mttrMinutes": 11
+  },
+  "entities": [
+    {
+      "entityId": "SERVICE-CHECKOUT",
+      "entityName": "checkout-service",
+      "type": "SERVICE"
+    },
+    {
+      "entityId": "SERVICE-PAYMENT",
+      "entityName": "payment-gateway",
+      "type": "SERVICE"
+    }
+  ],
+  "metrics": {
+    "cpu_utilization": 87.4,
+    "memory_utilization": 72.1,
+    "error_rate": 6.8,
+    "p95_latency_ms": 1480,
+    "request_rate_per_minute": 9200
+  },
+  "logs": [
+    {
+      "timestamp": "2026-05-17T03:13:14Z",
+      "level": "ERROR",
+      "message": "payment-gateway timeout after 3000ms"
+    },
+    {
+      "timestamp": "2026-05-17T03:13:20Z",
+      "level": "WARN",
+      "message": "checkout retry budget exhausted"
+    }
+  ],
+  "davis_context": {
+    "event": "Davis detected a causal relationship between payment-gateway saturation and checkout latency.",
+    "confidence": 0.91
+  },
+  "history": [
+    {
+      "problem_id": "P-240501-003",
+      "title": "Cart service memory saturation",
+      "severity": "ERROR",
+      "root_cause": "memory_leak",
+      "action_taken": "restart_service",
+      "resolved": true,
+      "mttr_minutes": 28,
+      "created_at": "2026-05-01T05:12:00Z"
+    },
+    {
+      "problem_id": "P-240507-004",
+      "title": "Checkout traffic surge",
+      "severity": "AVAILABILITY",
+      "root_cause": "traffic_spike",
+      "action_taken": "scale_service",
+      "resolved": true,
+      "mttr_minutes": 18,
+      "created_at": "2026-05-07T18:42:00Z"
+    },
+    {
+      "problem_id": "P-240514-009",
+      "title": "Payment gateway dependency timeout",
+      "severity": "ERROR",
+      "root_cause": "dependency_failure",
+      "action_taken": "publish_alert",
+      "resolved": true,
+      "mttr_minutes": 12,
+      "created_at": "2026-05-14T02:31:00Z"
+    }
+  ]
+}
