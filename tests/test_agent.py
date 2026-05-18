@@ -5,7 +5,7 @@ from agent import config
 from agent.orchestrator import handle_problem
 from agent.self_learn.runbook_updater import update_runbook
 from agent.tools.agent_builder import get_grounding_context
-from agent.tools.gemini_diagnosis import diagnose_problem
+from agent.tools.gemini_diagnosis import _parse_diagnosis_json, diagnose_problem
 from agent.tools.remediation import execute_remediation
 
 
@@ -36,6 +36,16 @@ def test_diagnosis_shape(sample_problem):
         "confidence",
     }
     assert 0 <= diagnosis["confidence"] <= 1
+
+
+def test_diagnosis_parser_accepts_markdown_json_fence():
+    diagnosis = _parse_diagnosis_json(
+        """```json
+{"root_cause":"traffic_spike","root_cause_explanation":"ok","recommended_action":"scale_service","confidence":0.8}
+```"""
+    )
+
+    assert diagnosis["root_cause"] == "traffic_spike"
 
 
 def test_agent_builder_grounding_demo_context(sample_problem):

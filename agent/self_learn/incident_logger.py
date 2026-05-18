@@ -56,12 +56,12 @@ def log_incident(
 
 
 def list_incidents() -> list[dict[str, Any]]:
+    sample = json.loads(config.FIXTURE_PROBLEM.read_text(encoding="utf-8"))
     if config.DEMO_MODE:
         incident_dir = _local_incident_dir()
         records = [json.loads(path.read_text(encoding="utf-8")) for path in incident_dir.glob("*.json")]
         if records:
             return sorted(records, key=lambda item: item.get("created_at", ""), reverse=True)
-        sample = json.loads(config.FIXTURE_PROBLEM.read_text(encoding="utf-8"))
         return sample["history"]
 
     if storage is None:
@@ -69,4 +69,6 @@ def list_incidents() -> list[dict[str, Any]]:
     client = storage.Client()
     bucket = client.bucket(config.INCIDENT_BUCKET)
     records = [json.loads(blob.download_as_text()) for blob in bucket.list_blobs(prefix="incidents/")]
-    return sorted(records, key=lambda item: item.get("created_at", ""), reverse=True)
+    if records:
+        return sorted(records, key=lambda item: item.get("created_at", ""), reverse=True)
+    return sample["history"]

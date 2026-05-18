@@ -3,7 +3,7 @@
 ## Google Cloud
 
 ```bash
-gcloud config set project opspilot-hackathon-2026
+gcloud config set project opspilot-496509
 gcloud services enable \
   aiplatform.googleapis.com \
   cloudbuild.googleapis.com \
@@ -18,8 +18,14 @@ gcloud services enable \
 ## Secrets
 
 ```bash
-echo -n "https://your-environment.live.dynatrace.com" | gcloud secrets create DYNATRACE_ENV_URL --data-file=-
-echo -n "your-token" | gcloud secrets create DYNATRACE_API_TOKEN --data-file=-
+echo -n "https://your-environment.apps.dynatrace.com" | gcloud secrets create DYNATRACE_ENV_URL --data-file=-
+echo -n "your-platform-token" | gcloud secrets create DYNATRACE_API_TOKEN --data-file=-
+```
+
+Use a Dynatrace Platform Token with MCP gateway access. The remote Dynatrace MCP endpoint is:
+
+```text
+https://{environment-name}.apps.dynatrace.com/platform-reserved/mcp-gateway/v0.1/servers/dynatrace-mcp/mcp
 ```
 
 ## Local Demo
@@ -40,7 +46,7 @@ The app uses fixture data when `DEMO_MODE=true` or Dynatrace credentials are abs
 OpsPilot must use Gemini only through Vertex AI so calls are billed to the Google Cloud project. Do not configure `GEMINI_API_KEY` or `GOOGLE_API_KEY`. Production deployments should set:
 
 ```bash
-GCP_PROJECT_ID=opspilot-hackathon-2026
+GCP_PROJECT_ID=opspilot-496509
 GCP_LOCATION=us-central1
 DEMO_MODE=false
 ```

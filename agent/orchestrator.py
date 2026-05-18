@@ -3,6 +3,11 @@ from __future__ import annotations
 import json
 from typing import Any
 
+try:
+    from google.cloud import storage
+except ImportError:
+    storage = None
+
 from agent import config
 from agent.reasoning_engine import OpsPilotAgent
 from agent.self_learn.incident_logger import log_incident
@@ -16,13 +21,22 @@ def _state_path():
     return config.LOCAL_STATE_DIR / "processed_ids.json"
 
 
+def _state_blob():
+    if storage is None:
+        raise RuntimeError("google-cloud-storage is required outside demo mode")
+    return storage.Client().bucket(config.INCIDENT_BUCKET).blob("state/processed_ids.json")
+
+
 def get_processed_ids() -> set[str]:
     if config.DEMO_MODE:
         path = _state_path()
         if not path.exists():
             return set()
         return set(json.loads(path.read_text(encoding="utf-8")))
-    return set()
+    blob = _state_blob()
+    if not blob.exists():
+        return set()
+    return set(json.loads(blob.download_as_text()))
 
 
 def save_processed_ids(processed_ids: set[str]) -> None:
@@ -31,6 +45,11 @@ def save_processed_ids(processed_ids: set[str]) -> None:
             _state_path().write_text(json.dumps(sorted(processed_ids), indent=2), encoding="utf-8")
         except OSError:
             return
+        return
+    _state_blob().upload_from_string(
+        json.dumps(sorted(processed_ids), indent=2),
+        content_type="application/json",
+    )
 
 
 async def handle_problem(problem: dict[str, Any]) -> dict[str, Any]:

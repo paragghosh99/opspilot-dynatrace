@@ -4,13 +4,19 @@ import os
 from pathlib import Path
 
 
-PROJECT_ID = os.getenv("GCP_PROJECT_ID", "opspilot-hackathon-2026")
+PROJECT_ID = os.getenv("GCP_PROJECT_ID", "opspilot-496509")
 LOCATION = os.getenv("GCP_LOCATION", "us-central1")
-INCIDENT_BUCKET = os.getenv("INCIDENT_BUCKET", "opspilot-incidents")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-pro")
+INCIDENT_BUCKET = os.getenv("INCIDENT_BUCKET", "opspilot-incidents-opspilot-496509")
 PUBSUB_TOPIC = os.getenv("PUBSUB_TOPIC", "opspilot-incidents")
 AGENT_BUILDER_ENGINE_ID = os.getenv("AGENT_BUILDER_ENGINE_ID", "")
 RESTART_WEBHOOK_URL = os.getenv("RESTART_WEBHOOK_URL", "")
-DEMO_MODE = os.getenv("DEMO_MODE", "").lower() in {"1", "true", "yes"} or not os.getenv("DYNATRACE_ENV_URL")
+
+_demo_mode = os.getenv("DEMO_MODE")
+if _demo_mode is None:
+    DEMO_MODE = not (os.getenv("DYNATRACE_ENV_URL") or os.getenv("DYNATRACE_ENV_URL_SECRET"))
+else:
+    DEMO_MODE = _demo_mode.lower() in {"1", "true", "yes"}
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 LOCAL_STATE_DIR = ROOT_DIR / ".opspilot"

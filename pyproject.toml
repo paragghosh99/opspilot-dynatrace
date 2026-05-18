@@ -1,3 +1,7 @@
 [tool.pytest.ini_options]
 pythonpath = ["."]
 testpaths = ["tests"]
+markers = [
+  "live_safe: low-cost production endpoint smoke tests",
+  "live_expensive: opt-in live pipeline tests that may call Gemini and Pub/Sub",
+]

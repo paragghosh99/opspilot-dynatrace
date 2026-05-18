@@ -17,6 +17,21 @@ class DiagnosisFormatError(RuntimeError):
     pass
 
 
+def _parse_diagnosis_json(text: str) -> dict[str, Any]:
+    cleaned = text.strip()
+    if cleaned.startswith("```"):
+        lines = cleaned.splitlines()
+        if lines and lines[0].startswith("```"):
+            lines = lines[1:]
+        if lines and lines[-1].startswith("```"):
+            lines = lines[:-1]
+        cleaned = "\n".join(lines).strip()
+    try:
+        return json.loads(cleaned)
+    except json.JSONDecodeError as exc:
+        raise DiagnosisFormatError("Gemini response was not valid JSON") from exc
+
+
 def _demo_diagnosis(problem: dict[str, Any], metrics: dict[str, Any], logs: list[dict[str, Any]]) -> dict[str, Any]:
     title = problem.get("title", "").lower()
     cpu = float(metrics.get("cpu_utilization", 0))
@@ -61,7 +76,7 @@ def diagnose_problem(
 
     config.validate_vertex_ai_billing_config()
     vertexai.init(project=config.PROJECT_ID, location=config.LOCATION)
-    model = GenerativeModel("gemini-2.5-pro-preview-05-06")
+    model = GenerativeModel(config.GEMINI_MODEL)
     entity_names = [item.get("entityName", item.get("displayName", "unknown")) for item in entities]
     prompt = f"""
 You are OpsPilot, an autonomous SRE incident response agent. Analyze the Dynatrace problem and return only valid JSON.
@@ -79,10 +94,7 @@ Return a JSON object with:
 - confidence: number from 0.0 to 1.0
 """
     response = model.generate_content(prompt)
-    try:
-        diagnosis = json.loads(response.text.strip())
-    except json.JSONDecodeError as exc:
-        raise DiagnosisFormatError("Gemini response was not valid JSON") from exc
+    diagnosis = _parse_diagnosis_json(response.text)
 
     required = {"root_cause", "root_cause_explanation", "recommended_action", "confidence"}
     if not required.issubset(diagnosis):
